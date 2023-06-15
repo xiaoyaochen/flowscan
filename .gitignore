@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+*.json
+*.csv
+resume.cfg
+flowscan
