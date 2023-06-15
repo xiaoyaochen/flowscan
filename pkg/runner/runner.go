@@ -177,7 +177,7 @@ func (cmd *NmapServiceCommand) Run() error {
 					}
 				}
 			}
-			if "Closed" != result.Status {
+			if "Closed" != result.Status && "" != result.Status {
 				stdoutEncoder.Encode(result)
 				if cmd.DBOutput != "" {
 					doc, err := json.Marshal(result)
