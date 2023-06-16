@@ -6,7 +6,8 @@ import (
 )
 
 var App struct {
-	NmapService runner.NmapServiceCommand `cmd name:"nmap" help:"Input ip:port to Nmap scan"`
+	NmapService    runner.NmapServiceCommand    `cmd name:"nmap" help:"Input ip:port to Nmap scan"`
+	MascsanService runner.MasscanServiceCommand `cmd name:"masscan" help:"Input ip to Nmap scan"`
 }
 
 func main() {

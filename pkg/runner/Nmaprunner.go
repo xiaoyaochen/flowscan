@@ -50,11 +50,6 @@ type NmapServiceCommand struct {
 	DB       db.DB  `kong:"-"`
 }
 
-type IpPort struct {
-	Ip   string
-	Port int
-}
-
 func (cmd *NmapServiceCommand) Run() error {
 	if !cmd.Debug {
 		log.SetOutput(ioutil.Discard)

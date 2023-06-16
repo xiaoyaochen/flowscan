@@ -5,17 +5,22 @@ go 1.18
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/alecthomas/kong v0.7.1
+	github.com/google/gopacket v1.1.19
 	github.com/json-iterator/go v1.1.12
 	github.com/lcvvvv/gonmap v1.3.4
 	github.com/miekg/dns v1.1.54
+	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/pkg/errors v0.9.1
 	github.com/projectdiscovery/gologger v1.1.10
 	github.com/projectdiscovery/httpx v1.3.1
+	github.com/projectdiscovery/ipranger v0.0.6
+	github.com/projectdiscovery/networkpolicy v0.0.6
 	github.com/projectdiscovery/retryablehttp-go v1.0.16
 	github.com/projectdiscovery/tlsx v1.0.9
 	github.com/yinheli/mahonia v0.0.0-20131226213531-0eef680515cc
 	go.mongodb.org/mongo-driver v1.11.7
 	golang.org/x/net v0.10.0
+	golang.org/x/time v0.0.0-20220411224347-583f2d630306
 )
 
 require (
@@ -47,11 +52,10 @@ require (
 	github.com/projectdiscovery/fastdialer v0.0.26 // indirect
 	github.com/projectdiscovery/goflags v0.1.9 // indirect
 	github.com/projectdiscovery/hmap v0.0.11 // indirect
-	github.com/projectdiscovery/networkpolicy v0.0.6 // indirect
+	github.com/projectdiscovery/mapcidr v1.1.1 // indirect
 	github.com/projectdiscovery/rawhttp v0.1.11 // indirect
 	github.com/projectdiscovery/retryabledns v1.0.23 // indirect
 	github.com/projectdiscovery/utils v0.0.35 // indirect
-	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
