@@ -16,9 +16,9 @@ import (
 )
 
 type MasscanServiceCommand struct {
-	MaxThreads     int                       `help:"Max threads" short:"t" default:"50"`
-	ThreadManager  *goccm.ConcurrencyManager `kong:"-"`
-	ExploreTimeout time.Duration             `short:"x" default:"5s"`
+	MaxThreads    int                       `help:"Max threads" short:"t" default:"50"`
+	ThreadManager *goccm.ConcurrencyManager `kong:"-"`
+	Timeout       time.Duration             `short:"x" default:"10s"`
 
 	Host        string              `help:"host to scan" short:"i" default:""`
 	HostFile    string              `help:"host list to scan" short:"l" default:""`
@@ -149,7 +149,7 @@ func (cmd *MasscanServiceCommand) SynScan(hosts []string, port_list utils.PortLi
 		count_now := int(cmd.masscanClient.Count())
 		// count_last = count_now
 		if count_now == count {
-			time.Sleep(time.Second * 10)
+			time.Sleep(cmd.Timeout)
 			break
 		}
 	}
