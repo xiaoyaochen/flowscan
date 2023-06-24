@@ -154,8 +154,9 @@ func (cmd *NmapServiceCommand) Run() error {
 			} else {
 				//httpx扫描没识别进行端口扫描
 				var scanner = gonmap.New()
+				scanner.SetTimeout(cmd.ExploreTimeout)
 				if host == ip {
-					status, response := scanner.ScanTimeout(host, port, cmd.ExploreTimeout)
+					status, response := scanner.ScanTimeout(host, port, cmd.ExploreTimeout*7)
 					result.Status = status.String()
 					if response != nil {
 						result.Raw = response.Raw
