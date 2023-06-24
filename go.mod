@@ -17,6 +17,7 @@ require (
 	github.com/projectdiscovery/networkpolicy v0.0.6
 	github.com/projectdiscovery/retryablehttp-go v1.0.16
 	github.com/projectdiscovery/tlsx v1.0.9
+	github.com/schollz/progressbar/v3 v3.13.1
 	github.com/yinheli/mahonia v0.0.0-20131226213531-0eef680515cc
 	go.mongodb.org/mongo-driver v1.11.7
 	golang.org/x/net v0.10.0
@@ -40,8 +41,10 @@ require (
 	github.com/hbakhtiyor/strsim v0.0.0-20190107154042-4d2bbb273edf // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
+	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.24 // indirect
+	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
@@ -56,6 +59,7 @@ require (
 	github.com/projectdiscovery/rawhttp v0.1.11 // indirect
 	github.com/projectdiscovery/retryabledns v1.0.23 // indirect
 	github.com/projectdiscovery/utils v0.0.35 // indirect
+	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
@@ -85,6 +89,7 @@ require (
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/term v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/tools v0.8.0 // indirect
 	gopkg.in/djherbis/times.v1 v1.3.0 // indirect

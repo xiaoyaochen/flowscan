@@ -81,19 +81,19 @@ func ParseIps(s string) ([]string, map[string][]string, []error) {
 
 	for i := 0; i < len(IPstrings); i++ {
 		match, _ := regexp.MatchString("[a-zA-Z]+", IPstrings[i])
-		if match {
-			//TODO doamin
-			aip := DnsResolutionA(IPstrings[i])
-			if aip != "" {
-				ips = append(ips, aip)
-				domainIpMap[aip] = append(domainIpMap[aip], IPstrings[i])
-			}
-		} else if strings.Contains(IPstrings[i], "+") {
+		if strings.Contains(IPstrings[i], "+") {
 			//TODO domain+ip
 			domainIp := strings.Split(IPstrings[i], "+")
 			if len(domainIp) == 2 {
 				ips = append(ips, domainIp[1])
 				domainIpMap[domainIp[1]] = append(domainIpMap[domainIp[1]], domainIp[0])
+			}
+		} else if match {
+			//TODO doamin
+			aip := DnsResolutionA(IPstrings[i])
+			if aip != "" {
+				ips = append(ips, aip)
+				domainIpMap[aip] = append(domainIpMap[aip], IPstrings[i])
 			}
 		} else if strings.Contains(IPstrings[i], "*") {
 			//TODO 192.168.0.*
