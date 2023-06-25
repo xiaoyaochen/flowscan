@@ -2,6 +2,7 @@ package runner
 
 import (
 	"bufio"
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -17,6 +18,7 @@ import (
 	"github.com/projectdiscovery/gologger"
 	"github.com/projectdiscovery/httpx/common/httpx"
 	"github.com/projectdiscovery/retryablehttp-go"
+	urlutil "github.com/projectdiscovery/utils/url"
 	"github.com/xiaoyaochen/flowscan/pkg/db"
 	"github.com/xiaoyaochen/flowscan/pkg/goccm"
 	"github.com/xiaoyaochen/flowscan/pkg/gonmap"
@@ -117,7 +119,7 @@ func (cmd *NmapServiceCommand) Run() error {
 
 			//httpx扫描
 			result := Result{Ip: ip, Host: host, Port: port}
-			url, resp, err := cmd.HttpxRequest(host + ":" + strconv.Itoa(port))
+			url, resp, err := cmd.HttpxRequest(host+":"+strconv.Itoa(port), result.Ip)
 			if err == nil {
 				result.Raw = resp.Raw
 				result.URL = url
@@ -211,9 +213,13 @@ func (cmd *NmapServiceCommand) ParseTarget(input string) (string, int, string) {
 	return Host, Port, Ip
 }
 
-func (cmd *NmapServiceCommand) HttpxRequest(input string) (string, *httpx.Response, error) {
+func (cmd *NmapServiceCommand) HttpxRequest(host string, ip string) (string, *httpx.Response, error) {
 	//默认req.Scheme = "https"
-	req, err := retryablehttp.NewRequest(http.MethodGet, input, nil)
+	// req, err := retryablehttp.NewRequest(http.MethodGet, input, nil)
+	ctx := context.WithValue(context.Background(), "ip", ip) //nolint
+	urlx, err := urlutil.ParseURL(host, false)
+	req, err := retryablehttp.NewRequestFromURLWithContext(ctx, http.MethodGet, urlx, nil)
+	req.Header.Add("Cookie", "rememberMe=0")
 	resp, err := cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
 	if err != nil {
 		//req.Scheme = "https"不行就换http
