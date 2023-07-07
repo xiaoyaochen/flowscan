@@ -41,7 +41,7 @@ type NmapServiceCommand struct {
 	Retries                   int          `help:"HTTPX Max Retries" short:"r" default:"0"`
 	Proxy                     string       `help:"http proxy to use (eg http://127.0.0.1:8080)" default:""`
 	FollowRedirects           bool         `help:"HTTPX follow http redirects"  default:"true"`
-	FollowHostRedirects       bool         `help:"follow redirects on the same host"  default:"true"`
+	FollowHostRedirects       bool         `help:"follow redirects on the same host"  default:"false"`
 	MaxRedirects              int          `help:"HTTPX max number of redirects to follow per host" default:"10"`
 	TLSGrab                   bool         `help:"perform TLS(SSL) data grabbing" short:"s" default:"false"`
 	MaxResponseBodySizeToSave int          `help:"HTTPX max response size to save in bytes"  default:"2147483647"`

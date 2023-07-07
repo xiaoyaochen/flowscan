@@ -19,7 +19,7 @@ import (
 type TcpscanServiceCommand struct {
 	MaxThreads    int                       `help:"Max threads" short:"t" default:"500"`
 	ThreadManager *goccm.ConcurrencyManager `kong:"-"`
-	Timeout       time.Duration             `short:"x" default:"10s"`
+	Timeout       time.Duration             `short:"x" default:"2s"`
 
 	Host        string              `help:"host to scan" short:"i" default:""`
 	HostFile    string              `help:"host list to scan" short:"l" default:""`

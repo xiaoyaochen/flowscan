@@ -9,6 +9,7 @@ var App struct {
 	NmapService    runner.NmapServiceCommand    `cmd name:"nmap" help:"Input ip:port to Nmap scan"`
 	MascsanService runner.MasscanServiceCommand `cmd name:"masscan" help:"Input ip to syn scan scan"`
 	TcpcsanService runner.TcpscanServiceCommand `cmd name:"tcpscan" help:"Input ip to tcp scan scan"`
+	CrackService   runner.CrackServiceCommand   `cmd name:"crack" help:"Input ip\port\service to tcp scan scan"`
 }
 
 func main() {

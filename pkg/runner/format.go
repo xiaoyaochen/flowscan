@@ -29,3 +29,10 @@ type Result struct {
 	ContentLength int               `json:"content_length,omitempty"`
 	Status        string            `json:"status,omitempty"`
 }
+
+type CrackResult struct {
+	Ip       string   `json:"ip"`
+	Port     int      `json:"port"`
+	Protocol string   `json:"protocol"`
+	UserPass []string `json:"user_pass"`
+}
