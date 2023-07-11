@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"log"
 	"os"
@@ -52,7 +51,7 @@ func (producer *MongoProducer) Push(docid string, doc []byte) error {
 	var insertTimeMap = map[string]time.Time{
 		"create_time": time.Now(),
 	}
-	if err := json.Unmarshal(doc, &obj); err != nil {
+	if err := bson.Unmarshal(doc, &obj); err != nil {
 		panic(err)
 	}
 	update_map := make(map[string]interface{})

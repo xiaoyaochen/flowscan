@@ -24,6 +24,7 @@ import (
 	"github.com/xiaoyaochen/flowscan/pkg/gonmap"
 	"github.com/xiaoyaochen/flowscan/pkg/patchfinger"
 	"github.com/xiaoyaochen/flowscan/pkg/wap"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type NmapServiceCommand struct {
@@ -179,7 +180,7 @@ func (cmd *NmapServiceCommand) Run() error {
 			if "Closed" != result.Status && "" != result.Status {
 				stdoutEncoder.Encode(result)
 				if cmd.DBOutput != "" {
-					doc, err := json.Marshal(result)
+					doc, err := bson.Marshal(result)
 					hash := md5.Sum([]byte(result.Host + strconv.Itoa(result.Port) + result.Ip))
 					docid := hex.EncodeToString(hash[:])
 					if err != nil {

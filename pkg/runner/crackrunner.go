@@ -16,6 +16,7 @@ import (
 	"github.com/xiaoyaochen/flowscan/pkg/crack"
 	"github.com/xiaoyaochen/flowscan/pkg/db"
 	"github.com/xiaoyaochen/flowscan/pkg/goccm"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CrackServiceCommand struct {
@@ -97,7 +98,7 @@ func (cmd *CrackServiceCommand) Run() error {
 					}
 					cmd.JsonEncoder.Encode(crackr)
 					if cmd.DBOutput != "" {
-						doc, err := json.Marshal(crackr)
+						doc, err := bson.Marshal(crackr)
 						hash := md5.Sum([]byte(crackr.Ip + strconv.Itoa(crackr.Port) + crackr.Protocol))
 						docid := hex.EncodeToString(hash[:])
 						if err != nil {
