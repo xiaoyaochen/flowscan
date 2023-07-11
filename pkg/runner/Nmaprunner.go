@@ -35,6 +35,7 @@ type NmapServiceCommand struct {
 	patchfinger    *patchfinger.Packjson     `kong:"-"`
 	TechDetectFile string                    `help:"the path for wappalyzer technology" short:"w" default:""`
 	TechDetect     bool                      `help:"display technology in use based on wappalyzer dataset" short:"d" default:"false"`
+	Shiro          bool                      `help:"request for find shiro" default:"true"`
 
 	HTTPX                     *httpx.HTTPX `kong:"-"`
 	RandomAgent               bool         `help:"enable Random User-Agent to use"  default:"true"`
@@ -219,7 +220,7 @@ func (cmd *NmapServiceCommand) HttpxRequest(host string, ip string) (string, *ht
 	ctx := context.WithValue(context.Background(), "ip", ip) //nolint
 	urlx, err := urlutil.ParseURL(host, false)
 	req, err := retryablehttp.NewRequestFromURLWithContext(ctx, http.MethodGet, urlx, nil)
-	req.Header.Add("Cookie", "rememberMe=0")
+	// req.Header.Add("Cookie", "rememberMe=0")
 	resp, err := cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
 	if err != nil {
 		//req.Scheme = "https"不行就换http
@@ -227,6 +228,13 @@ func (cmd *NmapServiceCommand) HttpxRequest(host string, ip string) (string, *ht
 		resp, err = cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
 		if err != nil {
 			return req.URL.String(), resp, err
+		}
+	}
+	if cmd.Shiro {
+		req.Header.Add("Cookie", "rememberMe=0")
+		resp_shiro, err := cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
+		if err == nil {
+			return req.URL.String(), resp_shiro, nil
 		}
 	}
 	return req.URL.String(), resp, nil
