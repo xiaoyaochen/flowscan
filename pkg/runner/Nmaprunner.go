@@ -196,6 +196,11 @@ func (cmd *NmapServiceCommand) Run() error {
 						result.OperatingSystem = response.FingerPrint.OperatingSystem
 						result.Hostname = response.FingerPrint.Hostname
 						result.DeviceType = response.FingerPrint.DeviceType
+						if (strings.Contains(result.Service, "http") && result.TLS) || strings.Contains(result.Service, "https") {
+							result.URL = "https://" + result.Host + ":" + strconv.Itoa(result.Port)
+						} else if strings.Contains(result.Service, "http") && !result.TLS {
+							result.URL = "http://" + result.Host + ":" + strconv.Itoa(result.Port)
+						}
 					}
 				}
 			}
@@ -276,17 +281,35 @@ func (cmd *NmapServiceCommand) HttpxRequest(host string, ip string) (string, *ht
 	urlx, err := urlutil.ParseURL(host, false)
 	req, err := retryablehttp.NewRequestFromURLWithContext(ctx, http.MethodGet, urlx, nil)
 	cmd.HTTPX.SetCustomHeaders(req, nil)
-	// req.Header.Add("Cookie", "rememberMe=0")
-	resp, err := cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
-	if err != nil {
-		//req.Scheme = "https"不行就换http
-		req.Scheme = "http"
+	var resp *httpx.Response
+	//如果host包含443就默认,否则默认http，如果报错的再更换http(s)
+	if strings.Contains(host, "443") {
+		req.Scheme = "https"
 		resp, err = cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
 		if err != nil {
-			return req.URL.String(), resp, err
+			//req.Scheme = "https"不行就换http
+			req.Scheme = "http"
+			resp, err = cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
+			if err != nil {
+				return req.URL.String(), resp, err
+			}
+		}
+	} else {
+		req.Scheme = "http"
+		resp, err = cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
+		if err != nil || strings.Contains(resp.Raw, "The plain HTTP request was sent to HTTPS port") {
+			//req.Scheme = "https"不行就换https
+			req.Scheme = "https"
+			resp, err = cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
+			if err != nil {
+				return req.URL.String(), resp, err
+			}
 		}
 	}
 	if cmd.Shiro {
+		if strings.Contains(resp.Raw, "The plain HTTP request was sent to HTTPS port") {
+			req.Scheme = "https"
+		}
 		req.Header.Add("Cookie", "rememberMe=0")
 		resp_shiro, err := cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
 		if err == nil {
