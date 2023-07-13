@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -121,10 +123,16 @@ func (cmd *NmapServiceCommand) Run() error {
 
 			//httpx扫描
 			result := Result{Ip: ip, Host: host, Port: port}
-			url, resp, err := cmd.HttpxRequest(host+":"+strconv.Itoa(port), result.Ip)
+			var Host string
+			if port == 0 {
+				Host = host
+			} else {
+				Host = host + ":" + strconv.Itoa(port)
+			}
+			Url, resp, err := cmd.HttpxRequest(Host, result.Ip)
 			if err == nil {
 				result.Raw = resp.Raw
-				result.URL = url
+				result.URL = Url
 				result.StatusCode = resp.StatusCode
 				result.Title = httpx.ExtractTitle(resp)
 				result.TLSData = resp.TLSData
@@ -146,15 +154,29 @@ func (cmd *NmapServiceCommand) Run() error {
 
 					}
 				}
+				//补充http协议
 				if result.Service == "" {
-					if strings.Contains(url, "https") {
+					if strings.Contains(Url, "https") {
 						result.TLS = true
 						result.Service = "https"
 					} else {
 						result.Service = "http"
 					}
 				}
-
+				//补充端口为0
+				if result.Port == 0 {
+					parsedURL, err := url.Parse(result.URL)
+					if err == nil {
+						p := parsedURL.Port()
+						if p == "" && strings.Contains(result.URL, "https") {
+							result.Port = 443 // 使用默认HTTP端口号
+						} else if p == "" && strings.Contains(result.URL, "http") {
+							result.Port = 80
+						} else {
+							result.Port, err = strconv.Atoi(p)
+						}
+					}
+				}
 			} else {
 				//httpx扫描没识别进行端口扫描
 				var scanner = gonmap.New()
@@ -201,16 +223,48 @@ func (cmd *NmapServiceCommand) ParseTarget(input string) (string, int, string) {
 	HostPortIp := strings.Split(input, "+")
 	var Host, Ip string
 	var Port int
-	HostPort := strings.Split(HostPortIp[0], ":")
-	Host = HostPort[0]
-	Port, err := strconv.Atoi(HostPort[1])
-	if err != nil {
-		log.Fatal(err)
-	}
-	if len(HostPortIp) == 2 {
-		Ip = HostPortIp[1]
+	var err error
+	if strings.Contains(HostPortIp[0], "http") {
+		//判断是否输入为url
+		parsedURL, err := url.Parse(HostPortIp[0])
+		if err == nil {
+			Host = parsedURL.Hostname()
+			p := parsedURL.Port()
+
+			if p == "" && strings.Contains(HostPortIp[0], "https") {
+				Port = 443 // 使用默认HTTP端口号
+			} else if p == "" && strings.Contains(HostPortIp[0], "http") {
+				Port = 80
+			} else {
+				Port, err = strconv.Atoi(p)
+			}
+			if len(HostPortIp) == 2 {
+				Ip = HostPortIp[1]
+			} else {
+				ipAddrs, err := net.ResolveIPAddr("ip", Host)
+				if err == nil {
+					Ip = ipAddrs.IP.String()
+				}
+			}
+		}
 	} else {
-		Ip = Host
+		//输入为IP端口
+		HostPort := strings.Split(HostPortIp[0], ":")
+		Host = HostPort[0]
+		if len(HostPort) == 2 {
+			Port, err = strconv.Atoi(HostPort[1])
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		if len(HostPortIp) == 2 {
+			Ip = HostPortIp[1]
+		} else {
+			ipAddrs, err := net.ResolveIPAddr("ip", Host)
+			if err == nil {
+				Ip = ipAddrs.IP.String()
+			}
+		}
 	}
 	return Host, Port, Ip
 }

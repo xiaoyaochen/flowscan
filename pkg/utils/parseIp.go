@@ -6,8 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	log "github.com/projectdiscovery/gologger"
 )
 
 // 192.168.0.1
@@ -139,15 +137,9 @@ func removeIps(ips []string, rips []string) *[]string {
 
 func DnsResolutionA(domain string) string {
 	// 获取域名解析A记录
-	ips, err := net.LookupHost(domain)
-	if err != nil {
-		log.Warning().Msgf("域名解析失败:%s", err)
-		return ""
-	}
-	for _, ip := range ips {
-		if parsedIP := net.ParseIP(ip); parsedIP != nil && parsedIP.To4() != nil {
-			return ip // 只输出 IPv4 地址
-		}
+	ipAddrs, err := net.ResolveIPAddr("ip", domain)
+	if err == nil {
+		return ipAddrs.IP.String()
 	}
 	return ""
 }
