@@ -275,6 +275,7 @@ func (cmd *NmapServiceCommand) HttpxRequest(host string, ip string) (string, *ht
 	ctx := context.WithValue(context.Background(), "ip", ip) //nolint
 	urlx, err := urlutil.ParseURL(host, false)
 	req, err := retryablehttp.NewRequestFromURLWithContext(ctx, http.MethodGet, urlx, nil)
+	cmd.HTTPX.SetCustomHeaders(req, nil)
 	// req.Header.Add("Cookie", "rememberMe=0")
 	resp, err := cmd.HTTPX.Do(req, httpx.UnsafeOptions{})
 	if err != nil {
