@@ -22,7 +22,7 @@ type Logger interface {
 	Println(v ...interface{})
 }
 
-//r["PROBE"] 总探针数、r["MATCH"] 总指纹数 、r["USED_PROBE"] 已使用探针数、r["USED_MATCH"] 已使用指纹数
+// r["PROBE"] 总探针数、r["MATCH"] 总指纹数 、r["USED_PROBE"] 已使用探针数、r["USED_MATCH"] 已使用指纹数
 func init() {
 	initWithFilter(9)
 }
@@ -136,6 +136,7 @@ func customNMAPMatch() {
 	nmap.AddMatch("TCP_TerminalServerCookie", `ms-wbt-server m|^\x03\0\0\x13\x0e\xd0\0\0\x124\0\x02.*\0\x02\0\0\0| p/Microsoft Terminal Services/ o/Windows/ cpe:/o:microsoft:windows/a`)
 	nmap.AddMatch("TCP_redis-server", `redis m|^.*redis_version:([.\d]+)\n|s p/Redis key-value store/ v/$1/ cpe:/a:redislabs:redis:$1/`)
 	nmap.AddMatch("TCP_redis-server", `redis m|^-NOAUTH Authentication required.|s p/Redis key-value store/`)
+	nmap.AddMatch("TCP_SMBProgNeg", `postgresql m|^E\0\0\0RSFATAL\0VFATAL\0c0\0Munsupported frontend protocol 65363| p/PostgreSQL DB/ cpe:/a:postgresql:postgresql/`)
 }
 
 func optimizeNMAPProbes() {
@@ -164,7 +165,7 @@ func optimizeNMAPProbes() {
 	nmap.probeNameMap["TCP_TerminalServer"].fallback = "TCP_GetRequest"
 }
 
-//配置类
+// 配置类
 func SetFilter(filter int) {
 	initWithFilter(filter)
 }
@@ -173,7 +174,7 @@ func SetLogger(v Logger) {
 	logger = v
 }
 
-//功能类
+// 功能类
 func New() *Nmap {
 	n := *nmap
 	return &n
