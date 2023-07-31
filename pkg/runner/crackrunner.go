@@ -31,8 +31,10 @@ type CrackServiceCommand struct {
 	crackRunner    *crack.Runner `kong:"-"`
 	PortInfo       bool          `help:"print nmap portInfo" short:"p" default:"false"`
 
-	DBOutput string `short:"b" help:"db(mongo) to write output results eg.dburl+dbname+collection" default:""`
-	DB       db.DB  `kong:"-"`
+	DBOutput   string        `short:"b" help:"db(mongo) to write output results eg.dburl+dbname+collection" default:""`
+	JsonOutput string        `short:"j" help:"json to write output results eg.result.json" default:""`
+	DB         db.DB         `kong:"-"`
+	JsonFile   *json.Encoder `kong:"-"`
 }
 
 func (cmd *CrackServiceCommand) Run() error {
@@ -43,6 +45,14 @@ func (cmd *CrackServiceCommand) Run() error {
 	cmd.JsonDecoder = json.NewDecoder(os.Stdin)
 	cmd.JsonEncoder = json.NewEncoder(os.Stdout)
 	cmd.ThreadManager = goccm.New(cmd.MaxThreads)
+	if cmd.JsonOutput != "" {
+		file, err := os.Create(cmd.JsonOutput)
+		if err != nil {
+			return errors.Wrap(err, "could not create json file")
+		}
+		defer file.Close()
+		cmd.JsonFile = json.NewEncoder(file)
+	}
 	crackOpt := crack.Options{
 		Threads:  cmd.MaxThreads,
 		Timeout:  int(cmd.ExploreTimeout),
@@ -97,6 +107,9 @@ func (cmd *CrackServiceCommand) Run() error {
 						}
 					}
 					cmd.JsonEncoder.Encode(crackr)
+					if cmd.JsonOutput != "" {
+						cmd.JsonFile.Encode(crackr)
+					}
 					if cmd.DBOutput != "" {
 						doc, err := bson.Marshal(crackr)
 						hash := md5.Sum([]byte(crackr.Ip + strconv.Itoa(crackr.Port) + crackr.Protocol))

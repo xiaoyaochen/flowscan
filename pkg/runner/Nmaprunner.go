@@ -52,8 +52,10 @@ type NmapServiceCommand struct {
 	MaxResponseBodySizeToRead int          `help:"HTTPX max response size to read in bytes"  default:"2147483647"`
 	Debug                     bool
 
-	DBOutput string `short:"b" help:"db(mongo) to write output results eg.dburl+dbname+collection" default:""`
-	DB       db.DB  `kong:"-"`
+	DBOutput   string        `short:"b" help:"db(mongo) to write output results eg.dburl+dbname+collection" default:""`
+	JsonOutput string        `short:"j" help:"json to write output results eg.result.json" default:""`
+	DB         db.DB         `kong:"-"`
+	JsonFile   *json.Encoder `kong:"-"`
 }
 
 func (cmd *NmapServiceCommand) Run() error {
@@ -62,6 +64,14 @@ func (cmd *NmapServiceCommand) Run() error {
 	}
 	stdoutEncoder := json.NewEncoder(os.Stdout)
 	stdinReader := bufio.NewReaderSize(os.Stdin, 1024*1024)
+	if cmd.JsonOutput != "" {
+		file, err := os.Create(cmd.JsonOutput)
+		if err != nil {
+			return errors.Wrap(err, "could not create json file")
+		}
+		defer file.Close()
+		cmd.JsonFile = json.NewEncoder(file)
+	}
 	cmd.ThreadManager = goccm.New(cmd.MaxThreads)
 	var err error
 
@@ -206,6 +216,9 @@ func (cmd *NmapServiceCommand) Run() error {
 			}
 			if "Closed" != result.Status && "" != result.Status {
 				stdoutEncoder.Encode(result)
+				if cmd.JsonOutput != "" {
+					cmd.JsonFile.Encode(result)
+				}
 				if cmd.DBOutput != "" {
 					doc, err := bson.Marshal(result)
 					hash := md5.Sum([]byte(result.Host + strconv.Itoa(result.Port) + result.Ip))
@@ -308,7 +321,11 @@ func (cmd *NmapServiceCommand) HttpxRequest(host string, ip string) (string, *ht
 	}
 	if cmd.Shiro {
 		if strings.Contains(resp.Raw, "The plain HTTP request was sent to HTTPS port") {
+			//如果还是存在The plain HTTP request was sent to HTTPS port，尝试去掉IP
+			ctx := context.WithValue(context.Background(), "ip", "") //nolint
+			req, err = retryablehttp.NewRequestFromURLWithContext(ctx, http.MethodGet, urlx, nil)
 			req.Scheme = "https"
+			cmd.HTTPX.SetCustomHeaders(req, nil)
 		}
 		req.Header.Add("Cookie", "rememberMe=0")
 		resp_shiro, err := cmd.HTTPX.Do(req, httpx.UnsafeOptions{})

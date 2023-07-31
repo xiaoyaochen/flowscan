@@ -8,7 +8,7 @@ type Result struct {
 	Port int    `json:"port" bson:"port"`
 
 	Raw              string `json:"-" bson:"raw"`
-	TLS              bool   `json:"tls,omitempty" bson:"tls,omitempty"`
+	TLS              bool   `json:"tls" bson:"tls"`
 	ProbeName        string `json:"probeName,omitempty" bson:"probeName,omitempty"`
 	MatchRegexString string `json:"match_regex_string,omitempty" bson:"match_regex_string,omitempty"`
 
