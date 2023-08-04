@@ -242,16 +242,16 @@ func (cmd *NmapServiceCommand) ParseTarget(input string) (string, int, string) {
 	var Host, Ip string
 	var Port int
 	var err error
-	if strings.Contains(HostPortIp[0], "http") {
+	if strings.Contains(HostPortIp[0], "http://") {
 		//判断是否输入为url
 		parsedURL, err := url.Parse(HostPortIp[0])
 		if err == nil {
 			Host = parsedURL.Hostname()
 			p := parsedURL.Port()
 
-			if p == "" && strings.Contains(HostPortIp[0], "https") {
+			if p == "" && strings.Contains(HostPortIp[0], "https://") {
 				Port = 443 // 使用默认HTTP端口号
-			} else if p == "" && strings.Contains(HostPortIp[0], "http") {
+			} else if p == "" && strings.Contains(HostPortIp[0], "http://") {
 				Port = 80
 			} else {
 				Port, err = strconv.Atoi(p)
