@@ -5,7 +5,7 @@
              tcpscan（tcp扫描）
 端口指纹探测:nmap (先用httpx识别是否为http协议如果能访问协议识别成功、否则使用nmap识别) (指纹包含nmap的probes协议指纹、Ehole网站指纹[默认开启]、wappalyzer开源的网站指纹[默认关闭-d参数开启])
 服务弱口令爆破:crack
-服务弱口令爆破：待开发（计划可配合指纹扫描）
+poc扫描：待开发（计划可配合指纹扫描）
 ```
 
 支持（IP、域名、IP:PORT、域名:PORT、URL、域名:8000+IP）等输入
@@ -119,12 +119,12 @@ sudo ./flowscan masscan -i 192.168.10.1 -p 1-65535| ./flowscan nmap -d
 ./flowscan tcpscan -i 192.168.10.1 -p 1-65535 | ./flowscan nmap -d
 ```
 
-#扫描常用web
+扫描常用web
 ```
 sudo ./flowscan masscan -i 192.168.10.1 -p 80,443,4443,5000,7070,8000,8008,8080,8081,8088,8090,8123,8180,8880,8181,8443,8888,9000,9080,9090,9091,9092,9443,9200,9980,10000| ./flowscan nmap -d
 ```
 
-#扫描url指纹
+扫描url指纹
 ```
 echo http://www.xxxx.com | ./flowscan nmap -d
 echo www.xxxx.com:8000 | ./flowscan nmap -d
@@ -132,7 +132,7 @@ echo www.xxxx.com:8000+127.0.0.1 | ./flowscan nmap -d
 cat url.txt | ./flowscan nmap -d
 ```
 
-#扫描服务弱口令
+扫描服务弱口令
 ```
 sudo ./flowscan masscan -i 192.168.10.1 | ./flowscan nmap -d | ./flowscan crack
 
