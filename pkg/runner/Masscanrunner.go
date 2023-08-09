@@ -3,7 +3,6 @@ package runner
 import (
 	"bufio"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -39,7 +38,7 @@ type ipPort struct {
 
 func (cmd *MasscanServiceCommand) Run() error {
 	if !cmd.Debug {
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 	}
 	cmd.stdinReader = bufio.NewReaderSize(os.Stdin, 1024*1024)
 	cmd.ThreadManager = goccm.New(cmd.MaxThreads)

@@ -6,7 +6,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -39,6 +39,7 @@ type NmapServiceCommand struct {
 	TechDetectFile string                    `help:"the path for wappalyzer technology" short:"w" default:""`
 	TechDetect     bool                      `help:"display technology in use based on wappalyzer dataset" short:"d" default:"false"`
 	Shiro          bool                      `help:"request for find shiro" default:"true"`
+	AllProbe       bool                      `help:"enable Nmap allProbeMap to use" short:"a" default:"false"`
 
 	HTTPX                     *httpx.HTTPX `kong:"-"`
 	RandomAgent               bool         `help:"enable Random User-Agent to use"  default:"true"`
@@ -60,7 +61,7 @@ type NmapServiceCommand struct {
 
 func (cmd *NmapServiceCommand) Run() error {
 	if !cmd.Debug {
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 	}
 	stdoutEncoder := json.NewEncoder(os.Stdout)
 	stdinReader := bufio.NewReaderSize(os.Stdin, 1024*1024)
@@ -190,6 +191,9 @@ func (cmd *NmapServiceCommand) Run() error {
 			} else {
 				//httpx扫描没识别进行端口扫描
 				var scanner = gonmap.New()
+				if cmd.AllProbe {
+					scanner.OpenDeepIdentify()
+				}
 				scanner.SetTimeout(cmd.ExploreTimeout)
 				if host == ip {
 					status, response := scanner.ScanTimeout(host, port, cmd.ExploreTimeout*7)
