@@ -3,7 +3,7 @@ package plugins
 import (
 	"strings"
 
-	"github.com/niudaii/zpscan/pkg/crack/plugins/smb"
+	"github.com/xiaoyaochen/flowscan/pkg/crack/plugins/smb"
 )
 
 func SmbCrack(serv *Service) (int, error) {

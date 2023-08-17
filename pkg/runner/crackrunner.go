@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -39,7 +39,7 @@ type CrackServiceCommand struct {
 
 func (cmd *CrackServiceCommand) Run() error {
 	if !cmd.Debug {
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 	}
 	// stdoutEncoder := json.NewEncoder(os.Stdout)
 	cmd.JsonDecoder = json.NewDecoder(os.Stdin)

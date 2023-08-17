@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/niudaii/zpscan/pkg/crack/plugins/wmiexec"
+	"github.com/xiaoyaochen/flowscan/pkg/crack/plugins/wmiexec"
 )
 
 func WmiHashCrack(serv *Service) (int, error) {

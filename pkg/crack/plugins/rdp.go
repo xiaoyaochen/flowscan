@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/niudaii/zpscan/pkg/crack/plugins/grdp"
+	"github.com/xiaoyaochen/flowscan/pkg/crack/plugins/grdp"
 )
 
 func RdpCrack(serv *Service) (int, error) {

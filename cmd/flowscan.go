@@ -10,6 +10,7 @@ var App struct {
 	MascsanService runner.MasscanServiceCommand `cmd name:"masscan" help:"Input ip to syn scan"`
 	TcpcsanService runner.TcpscanServiceCommand `cmd name:"tcpscan" help:"Input ip to tcp scan"`
 	CrackService   runner.CrackServiceCommand   `cmd name:"crack" help:"Input ip\port\service to crack"`
+	PocService     runner.PocServiceCommand     `cmd name:"poc" help:"Input url to poc scan"`
 }
 
 func main() {
