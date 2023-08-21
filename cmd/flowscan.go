@@ -11,6 +11,7 @@ var App struct {
 	TcpcsanService runner.TcpscanServiceCommand `cmd name:"tcpscan" help:"Input ip to tcp scan"`
 	CrackService   runner.CrackServiceCommand   `cmd name:"crack" help:"Input ip\port\service to crack"`
 	PocService     runner.PocServiceCommand     `cmd name:"poc" help:"Input url to poc scan"`
+	CsvService     runner.CsvServiceCommand     `cmd name:"csv" help:"json to csv"`
 }
 
 func main() {

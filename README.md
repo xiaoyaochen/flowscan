@@ -171,3 +171,8 @@ sudo ./flowscan masscan -i 192.168.10.1 | ./flowscan nmap -d | ./flowscan poc
 sudo ./flowscan masscan -i 192.168.10.1 | ./flowscan nmap -d -j port_result.json
 cat port_result.json | ./flowscan poc
 ```
+
+json类型结果转csv格式
+```
+cat 1.json | ./flowscan csv
+```
