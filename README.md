@@ -5,7 +5,7 @@
              tcpscan（tcp扫描）
 端口指纹探测:nmap (先用httpx识别是否为http协议如果能访问协议识别成功、否则使用nmap识别) (指纹包含nmap的probes协议指纹、Ehole网站指纹[默认开启]、wappalyzer开源的网站指纹[默认关闭-d参数开启])
 服务弱口令爆破:crack
-poc扫描：待开发（计划可配合指纹扫描）
+poc扫描：poc（使用了afrog的poc，可配合指纹扫描，匹配规则为插件名或者插件id包含是否指纹名称）
 ```
 
 支持（IP、域名、IP:PORT、域名:PORT、URL、域名:8000+IP）等输入
@@ -106,7 +106,29 @@ Flags:
   -p, --port-info             print nmap portInfo
   -b, --db-output=""          db(mongo) to write output results eg.dburl+dbname+collection
   -j, --json-output=""        json to write output results eg.result.json
-  ```
+```
+```
+ubuntu@VM-20-4-ubuntu:~/flowscan$ ./flowscan poc -h
+Usage: flowscan poc
+
+Input url to poc scan
+
+Flags:
+  -h, --help                  Show context-sensitive help.
+
+  -t, --max-threads=20        Max threads
+  -x, --explore-timeout=2s
+      --debug
+  -s, --search=""             search PoC by keyword , eg: -s tomcat,phpinfo
+      --finger                filter PoC by Finger
+  -S, --severity=""           pocs to run based on severity. Possible values: info, low, medium, high, critical, unknown
+  -u, --update-pocs           update afrog-pocs
+  -l, --print-pocs            print afrog-pocs list
+  -f, --pocs-file-path=""     afrog-pocs PocsFilePath
+  -p, --port-info             print nmap portInfo
+  -b, --db-output=""          db(mongo) to write output results eg.dburl+dbname+collection
+  -j, --json-output=""        json to write output results eg.result.json
+```
 ### 例子
 top1000扫描
 ```
@@ -139,4 +161,13 @@ sudo ./flowscan masscan -i 192.168.10.1 | ./flowscan nmap -d | ./flowscan crack
 ##或者
 sudo ./flowscan masscan -i 192.168.10.1 | ./flowscan nmap -d -j port_result.json
 cat port_result.json | ./flowscan crack
+```
+
+扫描POC
+```
+sudo ./flowscan masscan -i 192.168.10.1 | ./flowscan nmap -d | ./flowscan poc
+
+##或者
+sudo ./flowscan masscan -i 192.168.10.1 | ./flowscan nmap -d -j port_result.json
+cat port_result.json | ./flowscan poc
 ```
