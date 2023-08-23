@@ -2,6 +2,7 @@ package runner
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -62,9 +63,9 @@ func (cmd *PocServiceCommand) Run() error {
 			return err
 		}
 		for _, v := range plist {
-			log.Println(v)
+			fmt.Println(v)
 		}
-		log.Println("PoC count: ", len(plist))
+		fmt.Println("PoC count: ", len(plist))
 		return nil
 	}
 	if cmd.UpdatePocs {
@@ -247,15 +248,15 @@ func (cmd *PocServiceCommand) GetAllPoc() []poc.Poc {
 }
 
 func printPathLog(upgrade *upgrade.Upgrade) {
-	log.Println("PATH:")
-	log.Println("   " + options.Config.GetConfigPath())
+	fmt.Println("PATH:")
+	fmt.Println("   " + options.Config.GetConfigPath())
 	if options.UpdatePocs {
-		log.Println("   " + poc.GetPocPath() + " v" + upgrade.LastestVersion)
+		fmt.Println("   " + poc.GetPocPath() + " v" + upgrade.LastestVersion)
 	} else {
 		if utils.Compare(upgrade.LastestVersion, ">", upgrade.CurrVersion) {
-			log.Println("   " + poc.GetPocPath() + " v" + upgrade.CurrVersion + " (" + upgrade.LastestVersion + ")")
+			fmt.Println("   " + poc.GetPocPath() + " v" + upgrade.CurrVersion + " (" + upgrade.LastestVersion + ")")
 		} else {
-			log.Println("   " + poc.GetPocPath() + " v" + upgrade.CurrVersion)
+			fmt.Println("   " + poc.GetPocPath() + " v" + upgrade.CurrVersion)
 		}
 	}
 }

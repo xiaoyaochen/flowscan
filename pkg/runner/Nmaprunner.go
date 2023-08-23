@@ -246,7 +246,7 @@ func (cmd *NmapServiceCommand) ParseTarget(input string) (string, int, string) {
 	var Host, Ip string
 	var Port int
 	var err error
-	if strings.Contains(HostPortIp[0], "http://") {
+	if strings.Contains(HostPortIp[0], "http://") || strings.Contains(HostPortIp[0], "https://") {
 		//判断是否输入为url
 		parsedURL, err := url.Parse(HostPortIp[0])
 		if err == nil {
