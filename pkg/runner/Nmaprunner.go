@@ -137,6 +137,9 @@ func (cmd *NmapServiceCommand) Run() error {
 			var Host string
 			if port == 0 {
 				Host = host
+			} else if strings.Contains(input, "/") {
+				//输入带有/的符号认为是url不做改变
+				Host = input
 			} else {
 				Host = host + ":" + strconv.Itoa(port)
 			}
@@ -270,14 +273,21 @@ func (cmd *NmapServiceCommand) ParseTarget(input string) (string, int, string) {
 			}
 		}
 	} else {
+		var thp string
+		if strings.Contains(HostPortIp[0], "/") {
+			//解析没有协议头并且有路径的目标，类似127.0.0.1/admin
+			thp = strings.Split(HostPortIp[0], "/")[0]
+		} else {
+			thp = HostPortIp[0]
+		}
 		//输入为IP端口
-		HostPort := strings.Split(HostPortIp[0], ":")
+		HostPort := strings.Split(thp, ":")
 		Host = HostPort[0]
 		if len(HostPort) == 2 {
 			Port, err = strconv.Atoi(HostPort[1])
 		}
 		if err != nil {
-			log.Fatal(err)
+			log.Println(input, err)
 		}
 		if len(HostPortIp) == 2 {
 			Ip = HostPortIp[1]

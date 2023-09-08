@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,8 +15,10 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/projectdiscovery/gologger"
 	"github.com/xiaoyaochen/flowscan/pkg/db"
 	"github.com/xiaoyaochen/flowscan/pkg/goccm"
+	utl "github.com/xiaoyaochen/flowscan/pkg/utils"
 	"github.com/zan8in/afrog/pkg/catalog"
 	"github.com/zan8in/afrog/pkg/config"
 	"github.com/zan8in/afrog/pkg/core"
@@ -24,6 +28,7 @@ import (
 	"github.com/zan8in/afrog/pkg/upgrade"
 	"github.com/zan8in/afrog/pkg/utils"
 	"github.com/zan8in/afrog/pocs"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var options = &config.Options{}
@@ -90,6 +95,19 @@ func (cmd *PocServiceCommand) Run() error {
 		r := result.(*core.Result)
 		if r.IsVul {
 			cmd.JsonEncoder.Encode(r)
+			if cmd.JsonOutput != "" {
+				cmd.JsonFile.Encode(r)
+			}
+			if cmd.DBOutput != "" {
+				doc, err := bson.Marshal(r)
+				hash := md5.Sum([]byte(r.Target + r.PocInfo.Info.Name))
+				docid := hex.EncodeToString(hash[:])
+				if err != nil {
+					gologger.Error().Msgf("Could not Marshal resp: %s\n", err)
+				} else {
+					err = cmd.DB.Push(docid, doc)
+				}
+			}
 		}
 		lock.Unlock()
 	}
@@ -99,6 +117,7 @@ func (cmd *PocServiceCommand) Run() error {
 	cmd.JsonEncoder = json.NewEncoder(os.Stdout)
 	cmd.ThreadManager = goccm.New(cmd.MaxThreads)
 	cmd.Pocs = cmd.GetAllPoc()
+	ex_service := []string{"", " ", "http", "https"}
 	if cmd.JsonOutput != "" {
 		file, err := os.Create(cmd.JsonOutput)
 		if err != nil {
@@ -136,7 +155,13 @@ func (cmd *PocServiceCommand) Run() error {
 		for _, pc := range cmd.Pocs {
 			pc := pc
 			if cmd.Finger {
-				if !Filterfinger(append(ipResult.Apps, ipResult.Service), pc.Id, pc.Info.Name) {
+				var finger []string
+				if !utl.Listcontains(ex_service, ipResult.Service) {
+					finger = append(ipResult.Apps, ipResult.Service)
+				} else {
+					finger = ipResult.Apps
+				}
+				if !Filterfinger(finger, pc.Id, pc.Info.Name) {
 					continue
 				}
 			}
@@ -148,6 +173,7 @@ func (cmd *PocServiceCommand) Run() error {
 			}
 			cmd.ThreadManager.Wait()
 			go func(target string, pc *poc.Poc) {
+				log.Printf("running：%s-%s", target, pc.Info.Name)
 				defer cmd.ThreadManager.Done()
 				ck := core.Checker{
 					Options:         options,
