@@ -25,6 +25,7 @@ import (
 	"github.com/xiaoyaochen/flowscan/pkg/goccm"
 	"github.com/xiaoyaochen/flowscan/pkg/gonmap"
 	"github.com/xiaoyaochen/flowscan/pkg/patchfinger"
+	"github.com/xiaoyaochen/flowscan/pkg/utils"
 	"github.com/xiaoyaochen/flowscan/pkg/wap"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -40,6 +41,7 @@ type NmapServiceCommand struct {
 	TechDetect     bool                      `help:"display technology in use based on wappalyzer dataset" short:"d" default:"false"`
 	Shiro          bool                      `help:"request for find shiro" default:"true"`
 	AllProbe       bool                      `help:"enable Nmap allProbeMap to use" short:"a" default:"false"`
+	WafCdnMaxCount int                       `help:"an ip open different port but in the same response max to filt; 0 is close" short:"c" default:"0"`
 
 	HTTPX                     *httpx.HTTPX `kong:"-"`
 	RandomAgent               bool         `help:"enable Random User-Agent to use"  default:"true"`
@@ -91,6 +93,10 @@ func (cmd *NmapServiceCommand) Run() error {
 			cmd.DB = db.NewMqProducer(cmd.DBOutput)
 		}
 	}
+
+	//cdn waf 过滤器
+	wafop := utils.InitWafCdnOp()
+
 	//初始化Ehole指纹
 	cmd.patchfinger, err = patchfinger.NewFingerprint()
 	if err != nil {
@@ -126,8 +132,14 @@ func (cmd *NmapServiceCommand) Run() error {
 		if isPrefix == true {
 			log.Fatal("Event is too big")
 		}
+		if cmd.WafCdnMaxCount != 0 {
+			if !wafop.WcIsPass(string(bytes), cmd.WafCdnMaxCount) {
+				continue
+			}
+		}
 		cmd.ThreadManager.Wait()
 		go func(input string) {
+			log.Printf(input)
 			//input输入为host:port、host:port+ip
 			//todu：支持url输入
 			host, port, ip := cmd.ParseTarget(input)
@@ -223,6 +235,10 @@ func (cmd *NmapServiceCommand) Run() error {
 			}
 			if "Closed" != result.Status && "" != result.Status {
 				stdoutEncoder.Encode(result)
+				log.Printf(result.Raw)
+				if cmd.WafCdnMaxCount != 0 {
+					wafop.WcAccumulate(result.Host, result.Service, result.Title, result.StatusCode, result.Words)
+				}
 				if cmd.JsonOutput != "" {
 					cmd.JsonFile.Encode(result)
 				}

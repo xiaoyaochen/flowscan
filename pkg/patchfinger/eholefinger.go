@@ -84412,6 +84412,23 @@ var Eholefinger = `{
                     "method": "keyword",
                     "location": "body",
                     "keyword": ["You Know, for Search"]
+                },
+                {
+                    "cms": "couchdb",
+                    "method": "keyword",
+                    "location": "header",
+                    "keyword": [
+                        "CouchDB"
+                    ]
+                },
+                {
+                    "cms": "couchdb",
+                    "method": "keyword",
+                    "location": "header",
+                    "keyword": [
+                        "couchdb",
+                        "x-couchdb-body-time: 0"
+                    ]
                 }
         ]
 }`
