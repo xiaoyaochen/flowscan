@@ -176,3 +176,16 @@ json类型结果转csv格式
 ```
 cat 1.json | ./flowscan csv
 ```
+
+### 更新说明
+
+#### 2023.9.18 新增waf、cdn等造成端口膨胀过滤功能
+-c 参数，默认为0代表不进行过滤，同一个IP，如果多个端口响应协议指纹类似，就会被累加，累加达到-c参数输入的数值，后续该IP的端口就会抛弃扫描
+原理：1、白名单黑名单构建
+        a、如果IP出现非http、https、空协议等就会认为大概率非waf、cdn，加入到IP白名单（WhiteIplist）不做过滤
+        b、80，443端口不过滤，生成端口白名单（WhitePortlist）
+        c、累计每个IP的端口返回的协议，相似的组累计协议指纹hash累计（WafCdnHashMap），然后生成WafCdnHashMap中IP对应hash最大值作为WafCdnIpMap中IP的累计值
+      2、过滤
+        a、IP白名单（WhiteIplist）不做过滤
+        b、端口白名单（WhitePortlist）不过滤
+        c、WafCdnIpMap中IP的累计值>-c 参数输入的值就过滤掉
