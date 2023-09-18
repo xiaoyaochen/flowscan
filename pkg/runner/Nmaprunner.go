@@ -59,6 +59,7 @@ type NmapServiceCommand struct {
 	JsonOutput string        `short:"j" help:"json to write output results eg.result.json" default:""`
 	DB         db.DB         `kong:"-"`
 	JsonFile   *json.Encoder `kong:"-"`
+	Task       string        `help:"Task Name to discriminate results" default:""`
 }
 
 func (cmd *NmapServiceCommand) Run() error {
@@ -234,6 +235,7 @@ func (cmd *NmapServiceCommand) Run() error {
 				}
 			}
 			if "Closed" != result.Status && "" != result.Status {
+				result.Task = cmd.Task
 				stdoutEncoder.Encode(result)
 				log.Printf(result.Raw)
 				if cmd.WafCdnMaxCount != 0 {
@@ -244,7 +246,7 @@ func (cmd *NmapServiceCommand) Run() error {
 				}
 				if cmd.DBOutput != "" {
 					doc, err := bson.Marshal(result)
-					hash := md5.Sum([]byte(result.Host + strconv.Itoa(result.Port) + result.Ip))
+					hash := md5.Sum([]byte(result.Host + strconv.Itoa(result.Port) + result.Ip + result.Task))
 					docid := hex.EncodeToString(hash[:])
 					if err != nil {
 						gologger.Error().Msgf("Could not Marshal resp: %s\n", err)

@@ -28,6 +28,7 @@ type Result struct {
 	Words         int               `json:"words,omitempty"  bson:"words,omitempty"`
 	ContentLength int               `json:"content_length,omitempty"  bson:"content_length,omitempty"`
 	Status        string            `json:"status,omitempty"  bson:"status,omitempty"`
+	Task          string            `json:"task,omitempty"  bson:"task,omitempty"`
 }
 
 type CrackResult struct {
@@ -35,4 +36,5 @@ type CrackResult struct {
 	Port     int      `json:"port" bson:"port"`
 	Protocol string   `json:"protocol" bson:"protocol"`
 	UserPass []string `json:"user_pass" bson:"user_pass"`
+	Task     string   `json:"task,omitempty"  bson:"task,omitempty"`
 }

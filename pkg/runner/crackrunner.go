@@ -35,6 +35,7 @@ type CrackServiceCommand struct {
 	JsonOutput string        `short:"j" help:"json to write output results eg.result.json" default:""`
 	DB         db.DB         `kong:"-"`
 	JsonFile   *json.Encoder `kong:"-"`
+	Task       string        `help:"Task Name to discriminate results" default:""`
 }
 
 func (cmd *CrackServiceCommand) Run() error {
@@ -98,7 +99,7 @@ func (cmd *CrackServiceCommand) Run() error {
 				pass := []string{}
 				crackresult := cmd.crackRunner.Crack(&ipaddr, user, pass)
 				if len(crackresult) > 0 {
-					crackr := CrackResult{Ip: ipaddr.Ip, Port: ipaddr.Port, Protocol: ipaddr.Protocol}
+					crackr := CrackResult{Ip: ipaddr.Ip, Port: ipaddr.Port, Protocol: ipaddr.Protocol, Task: cmd.Task}
 					if len(crackresult) >= cmd.MaxThreads && cmd.MaxThreads > 1 {
 						crackr.UserPass = []string{}
 					} else {
@@ -112,7 +113,7 @@ func (cmd *CrackServiceCommand) Run() error {
 					}
 					if cmd.DBOutput != "" {
 						doc, err := bson.Marshal(crackr)
-						hash := md5.Sum([]byte(crackr.Ip + strconv.Itoa(crackr.Port) + crackr.Protocol))
+						hash := md5.Sum([]byte(crackr.Ip + strconv.Itoa(crackr.Port) + crackr.Protocol + crackr.Task))
 						docid := hex.EncodeToString(hash[:])
 						if err != nil {
 							gologger.Error().Msgf("Could not Marshal resp: %s\n", err)
