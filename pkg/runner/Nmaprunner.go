@@ -181,6 +181,7 @@ func (cmd *NmapServiceCommand) Run() error {
 
 					}
 				}
+				result.Apps = utils.ListRemoveDuplicates(result.Apps)
 				//补充http协议
 				if result.Service == "" {
 					if strings.Contains(Url, "https") {
