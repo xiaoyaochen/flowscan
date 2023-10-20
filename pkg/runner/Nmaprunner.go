@@ -148,11 +148,11 @@ func (cmd *NmapServiceCommand) Run() error {
 			//httpx扫描
 			result := Result{Ip: ip, Host: host, Port: port}
 			var Host string
-			if port == 0 {
-				Host = host
-			} else if strings.Contains(input, "/") {
+			if strings.Contains(input, "/") {
 				//输入带有/的符号认为是url不做改变
 				Host = input
+			} else if port == 0 {
+				Host = host
 			} else {
 				Host = host + ":" + strconv.Itoa(port)
 			}
